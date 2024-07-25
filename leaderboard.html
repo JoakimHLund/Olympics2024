@@ -82,21 +82,34 @@
 
                     // Fetch players data from Firestore
                     db.collection("players").get().then((querySnapshot) => {
-                        var leaderboard = document.getElementById('leaderboard');
+                        const players = [];
                         querySnapshot.forEach((doc) => {
-                            var data = doc.data();
-                            var row = document.createElement('tr');
+                            players.push(doc.data());
+                        });
+
+                        // Sort players by points
+                        players.sort((a, b) => b.points - a.points);
+
+                        // Generate table rows
+                        const leaderboard = document.getElementById('leaderboard');
+                        players.forEach((data, index) => {
+                            const row = document.createElement('tr');
                             
+                            // Rank
+                            const rankCell = document.createElement('td');
+                            rankCell.textContent = index + 1;
+                            row.appendChild(rankCell);
+
                             // Player Name
-                            var playerNameCell = document.createElement('td');
+                            const playerNameCell = document.createElement('td');
                             playerNameCell.textContent = data.playerName;
                             row.appendChild(playerNameCell);
 
                             // Selected Countries
-                            var selectedCountriesCell = document.createElement('td');
+                            const selectedCountriesCell = document.createElement('td');
                             data.selectedCountries.forEach(countryName => {
-                                var img = document.createElement('img');
-                                var countryCode = countriesMap[countryName];
+                                const img = document.createElement('img');
+                                const countryCode = countriesMap[countryName];
                                 img.src = `https://unpkg.com/flag-icons@6.6.6/flags/4x3/${countryCode}.svg`;
                                 img.onerror = function () {
                                     this.src = 'img/olympicflag.png'; // Fallback image
@@ -106,7 +119,7 @@
                             row.appendChild(selectedCountriesCell);
 
                             // Points
-                            var pointsCell = document.createElement('td');
+                            const pointsCell = document.createElement('td');
                             pointsCell.textContent = data.points;
                             row.appendChild(pointsCell);
 
@@ -131,6 +144,7 @@
         <table class="leaderboard-table">
             <thead>
                 <tr>
+                    <th>Rank</th>
                     <th>Player Name</th>
                     <th>Selected Countries</th>
                     <th>Points</th>
