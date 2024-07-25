@@ -10,7 +10,7 @@ body {
 
 .header {
     width: calc(100% - 40px); /* Adjust width to add space on either side */
-    background-color: #6a0dad; /* Change background color to purple */
+    background-color: #84216B; /* Change background color to purple */
     padding: 15px 20px; /* Increase padding and add space on sides */
     box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
     position: fixed; /* Change to fixed for bottom placement */
