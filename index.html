@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Points Table</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app-compat.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDP-JXtqfJ_7KEi-R_IOe_o1__WqcS38LY",
+            authDomain: "olympicdraft-3330e.firebaseapp.com",
+            projectId: "olympicdraft-3330e",
+            storageBucket: "olympicdraft-3330e.appspot.com",
+            messagingSenderId: "527171908375",
+            appId: "1:527171908375:web:a4138b711ae0446020fd52"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+    </script>
+</head>
+<body>
+    <div class="header">
+        <p id="points-indicator">10/10 points</p>
+        <div class="selected-flags" id="selected-flags"></div>
+        <div class="input-container">
+            <label for="player-name">Player name:</label>
+            <input type="text" id="player-name">
+            <button id="submit-button" disabled>Submit</button>
+        </div>
+    </div>
+    <div class="title-container">
+        <img src="img/paris.png" alt="Paris" class="title-image">
+        <h1>Olympic Draft Paris 2024</h1>
+        <img src="img/avinor.PNG" alt="Avinor" class="title-image">
+    </div>
+    <div class="rules">
+        <p><strong>Rules:</strong></p>
+        <ul>
+            <li>Each country is given a draft cost based on predicted medal counts (from 1-10)</li>
+            <li>You have up to 10 points to draft your countries</li>
+            <li>Whenever a country you have drafted gets a medal you are given points:</li>
+            <ul>
+                <li>Gold 🥇 = 3 points</li>
+                <li>Silver 🥈 = 2 points</li>
+                <li>Bronze 🥉 = 1 point</li>
+            </ul>
+            <li>3 Countries have been given some special debuffs in order to balance the game</li>
+            <li>Any medals a country has been given before you joined the game will be removed from your total score in the end</li>
+        </ul>
+    </div>
+    <div class="featured-card-container" id="featured-country-cards"></div>
+    <div class="card-container" id="country-cards"></div>
+
+    <script>
+        let totalPoints = 10;
+        let usedPoints = 0;
+
+        function updatePointsIndicator() {
+            document.getElementById('points-indicator').textContent = `${totalPoints - usedPoints}/10 points`;
+        }
+
+        function updateSelectedFlags() {
+            const selectedFlagsContainer = document.getElementById('selected-flags');
+            selectedFlagsContainer.innerHTML = ''; // Clear existing flags
+            const selectedFlags = document.querySelectorAll('.card.selected img.flag, .featured-card.selected img.flag');
+            selectedFlags.forEach(flag => {
+                const smallFlag = document.createElement('img');
+                smallFlag.src = flag.src;
+                selectedFlagsContainer.appendChild(smallFlag);
+            });
+            toggleSubmitButton();
+        }
+
+        function updateCardStates() {
+            const cards = document.querySelectorAll('.card, .featured-card');
+            cards.forEach(card => {
+                const points = parseInt(card.dataset.points);
+                if (usedPoints + points > totalPoints && !card.classList.contains('selected')) {
+                    card.classList.add('unaffordable');
+                } else {
+                    card.classList.remove('unaffordable');
+                }
+            });
+        }
+
+        function handleFlagError(event) {
+            event.target.src = 'img/olympicflag.png';
+        }
+
+        function createFeaturedCard(countryName, countryCode, points, additionalText) {
+            const card = document.createElement('div');
+            card.className = 'featured-card';
+            card.dataset.points = points;
+
+            card.innerHTML = `
+                <img src="https://unpkg.com/flag-icons@6.6.6/flags/4x3/${countryCode}.svg" class="flag" onerror="handleFlagError(event)">
+                <h2>${countryName}</h2>
+                <p>Points: ${points}</p>
+                <div class="additional-info">${additionalText}</div>
+            `;
+
+            card.addEventListener('click', () => {
+                if (card.classList.contains('selected')) {
+                    card.classList.remove('selected');
+                    usedPoints -= points;
+                } else if (!card.classList.contains('unaffordable')) {
+                    card.classList.add('selected');
+                    usedPoints += points;
+                }
+                updatePointsIndicator();
+                updateSelectedFlags();
+                updateCardStates();
+            });
+
+            return card;
+        }
+
+        function toggleSubmitButton() {
+            const selectedCountries = document.querySelectorAll('.card.selected, .featured-card.selected').length;
+            const submitButton = document.getElementById('submit-button');
+            submitButton.disabled = selectedCountries === 0;
+            submitButton.style.backgroundColor = selectedCountries > 0 ? '#007bff' : '#ddd';
+            submitButton.style.color = selectedCountries > 0 ? '#fff' : '#aaa';
+            submitButton.style.cursor = selectedCountries > 0 ? 'pointer' : 'not-allowed';
+        }
+
+        document.getElementById('submit-button').addEventListener('click', () => {
+        const playerName = document.getElementById('player-name').value;
+        const selectedCountries = Array.from(document.querySelectorAll('.card.selected, .featured-card.selected')).map(card => card.querySelector('h2').textContent);
+        const dateTime = new Date().toISOString();
+        const playerData = {
+            playerName: playerName,
+            selectedCountries: selectedCountries,
+            dateTime: dateTime,
+            points: 0
+        };
+
+        db.collection("players").add(playerData)
+            .then(() => {
+                console.log("Document successfully written!");
+                // Redirect to registered.html
+                window.location.href = "registered.html";
+            })
+            .catch((error) => {
+                console.error("Error writing document: ", error);
+            });
+    });
+
+        fetch('countries.json')
+            .then(response => response.json())
+            .then(data => {
+                const featuredCountries = {
+                    'United States': { code: 'us', points: 10, text: '*United States only get points for Gold 🥇 medals' },
+                    'China': { code: 'cn', points: 8, text: '*China gets only 1 point from Gold 🥇 and Silver 🥈 medals as well' },
+                    'France': { code: 'fr', points: 10, text: '*France gets 2 points for both Gold 🥇 and Bronze 🥉 medals as well' }
+                };
+                const featuredContainer = document.getElementById('featured-country-cards');
+                const cardContainer = document.getElementById('country-cards');
+
+                data.forEach(item => {
+                    const countryName = item.NOC;
+                    const countryCode = item.Code;
+                    const points = item.Draft;
+
+                    if (featuredCountries[countryName]) {
+                        const { code, points, text } = featuredCountries[countryName];
+                        const featuredCard = createFeaturedCard(countryName, code, points, text);
+                        featuredContainer.appendChild(featuredCard);
+                    } else {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.dataset.points = points;
+
+                        card.innerHTML = `
+                            <img src="https://unpkg.com/flag-icons@6.6.6/flags/4x3/${countryCode}.svg" class="flag" onerror="handleFlagError(event)">
+                            <h2>${countryName}</h2>
+                            <p>Points: ${points}</p>
+                        `;
+
+                        card.addEventListener('click', () => {
+                            if (card.classList.contains('selected')) {
+                                card.classList.remove('selected');
+                                usedPoints -= points;
+                            } else if (!card.classList.contains('unaffordable')) {
+                                card.classList.add('selected');
+                                usedPoints += points;
+                            }
+                            updatePointsIndicator();
+                            updateSelectedFlags();
+                            updateCardStates();
+                        });
+
+                        cardContainer.appendChild(card);
+                    }
+                });
+
+                updatePointsIndicator();
+                updateCardStates();
+            })
+            .catch(error => console.error('Error fetching JSON:', error));
+    </script>
+</body>
+</html>
