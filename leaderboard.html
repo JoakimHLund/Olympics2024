@@ -4,57 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaderboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="leaderboard.css">
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app-compat.js"></script>
     <!-- Add Firebase products that you want to use -->
     <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore-compat.js"></script>
-    <style>
-        .leaderboard-container {
-            width: 80%;
-            max-width: 1200px;
-            margin: 40px auto;
-            text-align: center;
-        }
-
-        .leaderboard-container h1 {
-            margin-bottom: 20px;
-        }
-
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .leaderboard-table th, .leaderboard-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-
-        .leaderboard-table th {
-            background-color: #f2f2f2;
-        }
-
-        .leaderboard-table td img {
-            width: 40px;
-            height: auto;
-            margin-right: 5px;
-            vertical-align: middle;
-        }
-
-        .title-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px 0;
-        }
-
-        .title-container .title-image {
-            width: 85px;
-            height: auto;
-            margin: 0 20px;
-        }
-    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Your web app's Firebase configuration
