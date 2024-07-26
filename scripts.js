@@ -11,11 +11,11 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
-let totalPoints = 10;
+let totalPoints = 12;
 let usedPoints = 0;
 
 function updatePointsIndicator() {
-    document.getElementById('points-indicator').textContent = `${totalPoints - usedPoints}/10 Draft tokens 🔵 left`;
+    document.getElementById('points-indicator').textContent = `${totalPoints - usedPoints}/12 Draft tokens 🔵 left`;
 }
 
 function updateSelectedFlags() {

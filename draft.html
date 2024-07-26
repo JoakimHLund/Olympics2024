@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Points Table</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app-compat.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore-compat.js"></script>
+    <!-- Link to the external JavaScript file -->
+    <script src="scripts.js" defer></script>
+</head>
+<body>
+    <div class="header">
+        <p id="points-indicator">12/12 Draft Tokens 🔵 left</p>
+        <div class="selected-flags" id="selected-flags"></div>
+        <div class="input-container">
+            <input type="text" id="player-name" placeholder="Player name">
+            <button id="submit-button" disabled>Submit</button>
+        </div>
+    </div>
+    
+    <div class="title-container">
+        <img src="img/paris.png" alt="Paris" class="title-image">
+        <h1>Olympic Draft Paris 2024</h1>
+        <img src="img/avinor.PNG" alt="Avinor" class="title-image">
+    </div>
+    <div class="rules">
+        <p><strong>Rules:</strong></p>
+        <ul>
+            <li>Each country is given a Draft Cost based on predicted medal counts (from 1-10)</li>
+            <li>You have up to 12 Draft Tokens 🔵 to draft your countries</li>
+            <li>Whenever a country you have drafted gets a medal you are given points:</li>
+            <ul>
+                <li>Gold 🥇 = 30 points</li>
+                <li>Silver 🥈 = 20 points</li>
+                <li>Bronze 🥉 = 10 point</li>
+            </ul>
+            <li>3 Countries have been given some special debuffs in order to balance the game</li>
+            <li>Any medals a country has been given before you joined the game will be removed from your total score in the end</li>
+        </ul>
+    </div>
+    <div class="featured-card-container" id="featured-country-cards"></div>
+    <div class="card-container" id="country-cards"></div>
+</body>
+</html>
