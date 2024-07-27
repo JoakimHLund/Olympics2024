@@ -16,7 +16,7 @@
                 apiKey: "AIzaSyDP-JXtqfJ_7KEi-R_IOe_o1__WqcS38LY",
                 authDomain: "olympicdraft-3330e.firebaseapp.com",
                 projectId: "olympicdraft-3330e",
-                storageBucket: "olympicdraft-3330e.appspot.com",
+                storageBucket: "olympicdraft-3330e",
                 messagingSenderId: "527171908375",
                 appId: "1:527171908375:web:a4138b711ae0446020fd52"
             };
@@ -46,12 +46,29 @@
 
                         // Generate table rows
                         const leaderboard = document.getElementById('leaderboard');
+                        let currentRank = 0;
+                        let previousPoints = null;
+                        let rankCount = 0;
+
                         players.forEach((data, index) => {
                             const row = document.createElement('tr');
                             
                             // Rank
                             const rankCell = document.createElement('td');
-                            rankCell.textContent = index + 1;
+                            if (data.points !== previousPoints) {
+                                currentRank = rankCount + 1;
+                            }
+                            if (currentRank === 1) {
+                                rankCell.innerHTML = '🥇 ' + currentRank;
+                            } else if (currentRank === 2) {
+                                rankCell.innerHTML = '🥈 ' + currentRank;
+                            } else if (currentRank === 3) {
+                                rankCell.innerHTML = '🥉 ' + currentRank;
+                            } else {
+                                rankCell.textContent = currentRank;
+                            }
+                            previousPoints = data.points;
+                            rankCount++;
                             row.appendChild(rankCell);
 
                             // Player Name
@@ -94,7 +111,6 @@
         <img src="img/avinor.PNG" alt="Avinor" class="title-image">
     </div>
     <div class="leaderboard-container">
-        <h1>Leaderboard</h1>
         <table class="leaderboard-table">
             <thead>
                 <tr>
