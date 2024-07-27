@@ -16,7 +16,7 @@
                 apiKey: "AIzaSyDP-JXtqfJ_7KEi-R_IOe_o1__WqcS38LY",
                 authDomain: "olympicdraft-3330e.firebaseapp.com",
                 projectId: "olympicdraft-3330e",
-                storageBucket: "olympicdraft-3330e",
+                storageBucket: "olympicdraft-3330e.appspot.com",
                 messagingSenderId: "527171908375",
                 appId: "1:527171908375:web:a4138b711ae0446020fd52"
             };
@@ -38,7 +38,7 @@
                     db.collection("players").get().then((querySnapshot) => {
                         const players = [];
                         querySnapshot.forEach((doc) => {
-                            players.push(doc.data());
+                            players.push({ id: doc.id, ...doc.data() });
                         });
 
                         // Sort players by points
@@ -73,7 +73,10 @@
 
                             // Player Name
                             const playerNameCell = document.createElement('td');
-                            playerNameCell.textContent = data.playerName;
+                            const playerLink = document.createElement('a');
+                            playerLink.textContent = data.playerName;
+                            playerLink.href = `player.html?playerId=${data.id}`;
+                            playerNameCell.appendChild(playerLink);
                             row.appendChild(playerNameCell);
 
                             // Selected Countries

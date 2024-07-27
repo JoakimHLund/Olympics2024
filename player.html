@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Details</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .player-details {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .player-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .player-table th, .player-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        .player-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .player-table td {
+            background-color: #fff;
+        }
+        .country-name {
+            display: flex;
+            align-items: center;
+        }
+        .country-flag {
+            margin-right: 8px;
+            width: 24px;
+            height: 16px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+        .back-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app-compat.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore-compat.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Your web app's Firebase configuration
+            var firebaseConfig = {
+                apiKey: "AIzaSyDP-JXtqfJ_7KEi-R_IOe_o1__WqcS38LY",
+                authDomain: "olympicdraft-3330e.firebaseapp.com",
+                projectId: "olympicdraft-3330e",
+                storageBucket: "olympicdraft-3330e.appspot.com",
+                messagingSenderId: "527171908375",
+                appId: "1:527171908375:web:a4138b711ae0446020fd52"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            var db = firebase.firestore();
+
+            // Get playerId from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const playerId = urlParams.get('playerId');
+
+            if (!playerId) {
+                alert('No player ID found in URL');
+                return;
+            }
+
+            // Fetch player data from Firestore
+            const playerDoc = await db.collection("players").doc(playerId).get();
+            if (!playerDoc.exists) {
+                alert('No player found with the provided ID');
+                return;
+            }
+            const playerData = playerDoc.data();
+
+            // Display player name
+            document.getElementById('player-name').textContent = playerData.playerName;
+
+            // Fetch country data
+            const countriesResponse = await fetch('countries.json');
+            const countriesData = await countriesResponse.json();
+            const countriesMap = {};
+            countriesData.forEach(country => {
+                countriesMap[country.NOC] = country.Code;
+            });
+
+            // Fetch medal data from Firestore
+            const medalTableSnapshot = await db.collection("medalTables").get();
+            const medalTable = {};
+            medalTableSnapshot.forEach(doc => {
+                medalTable[doc.id] = doc.data();
+            });
+
+            // Generate table rows for selected countries
+            const tableBody = document.getElementById('player-countries');
+            playerData.selectedCountries.forEach(country => {
+                const row = document.createElement('tr');
+
+                const countryCell = document.createElement('td');
+                countryCell.className = 'country-name';
+                const countryFlag = document.createElement('img');
+                const countryCode = countriesMap[country];
+                countryFlag.className = 'country-flag';
+                countryFlag.src = `https://unpkg.com/flag-icons@6.6.6/flags/4x3/${countryCode}.svg`;
+                countryFlag.onerror = function () {
+                    this.src = 'img/olympicflag.png'; // Fallback image
+                };
+                countryCell.appendChild(countryFlag);
+                countryCell.appendChild(document.createTextNode(country));
+                row.appendChild(countryCell);
+
+                const medalData = medalTable[country] || { gold: 0, silver: 0, bronze: 0, points: 0 };
+
+                const goldCell = document.createElement('td');
+                goldCell.textContent = medalData.gold;
+                row.appendChild(goldCell);
+
+                const silverCell = document.createElement('td');
+                silverCell.textContent = medalData.silver;
+                row.appendChild(silverCell);
+
+                const bronzeCell = document.createElement('td');
+                bronzeCell.textContent = medalData.bronze;
+                row.appendChild(bronzeCell);
+
+                const pointsCell = document.createElement('td');
+                pointsCell.textContent = medalData.points;
+                row.appendChild(pointsCell);
+
+                tableBody.appendChild(row);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-button">Back to Leaderboard</a>
+        <h1 id="player-name">Player Name</h1>
+        <span></span> <!-- Spacer to balance the back button -->
+    </div>
+    <div class="player-details">
+        <table class="player-table">
+            <thead>
+                <tr>
+                    <th>Country</th>
+                    <th>Gold</th>
+                    <th>Silver</th>
+                    <th>Bronze</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody id="player-countries">
+                <!-- Player's selected countries data will be appended here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
