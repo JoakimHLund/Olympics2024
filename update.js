@@ -21,7 +21,12 @@ document.getElementById('update-button').addEventListener('click', async () => {
 
         // Fetch the Wikipedia page through the proxy
         console.log("Fetching data from Wikipedia...");
-        const response = await fetch('https://corsproxy.io/?https://en.wikipedia.org/wiki/2024_Summer_Olympics_medal_table');
+        // Cache busting parameter
+        const cacheBuster = new Date().getTime();
+
+        // Fetch the Wikipedia page through the proxy with cache busting
+        const response = await fetch(`https://corsproxy.io/?https://en.wikipedia.org/wiki/2024_Summer_Olympics_medal_table?_=${cacheBuster}`);
+
         const html = await response.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
