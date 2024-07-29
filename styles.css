@@ -259,3 +259,22 @@ body {
     border: solid 1px;
 }
 
+.stats-button-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.stats-button-container button {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.stats-button-container button:hover {
+    background-color: #0056b3;
+}

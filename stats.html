@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="stats.css">
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore-compat.js"></script>
+    <script src="stats.js" defer></script>
+</head>
+<body>
+    <div class="title-container">
+        <img src="img/paris.png" alt="Paris" class="title-image">
+        <h1>Stats</h1>
+        <img src="img/avinor.PNG" alt="Avinor" class="title-image">
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Country</th>
+                    <th>Draft Cost 🔵</th>
+                    <th>Gold 🥇</th>
+                    <th>Silver 🥈</th>
+                    <th>Bronze 🥉</th>
+                    <th>Points</th>
+                    <th>Points/Cost</th>
+                </tr>
+            </thead>
+            <tbody id="country-stats">
+                <!-- Data will be appended here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
