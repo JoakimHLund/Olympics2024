@@ -23,7 +23,7 @@
             // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
             var db = firebase.firestore();
-
+    
             // Fetch the countries data
             fetch('countries.json')
                 .then(response => response.json())
@@ -33,29 +33,36 @@
                     countriesData.forEach(country => {
                         countriesMap[country.NOC] = country.Code;
                     });
-
+    
                     // Fetch players data from Firestore
                     db.collection("players").get().then((querySnapshot) => {
                         const players = [];
                         querySnapshot.forEach((doc) => {
                             players.push({ id: doc.id, ...doc.data() });
                         });
-
-                        // Sort players by points
-                        players.sort((a, b) => b.points - a.points);
-
+    
+                        // Sort players by points minus penalties
+                        players.sort((a, b) => {
+                            const pointsA = a.points - (a.penalty || 0);
+                            const pointsB = b.points - (b.penalty || 0);
+                            return pointsB - pointsA;
+                        });
+    
                         // Generate table rows
                         const leaderboard = document.getElementById('leaderboard');
                         let currentRank = 0;
                         let previousPoints = null;
                         let rankCount = 0;
-
+    
                         players.forEach((data, index) => {
                             const row = document.createElement('tr');
                             
+                            // Calculate final points
+                            const finalPoints = data.points - (data.penalty || 0);
+    
                             // Rank
                             const rankCell = document.createElement('td');
-                            if (data.points !== previousPoints) {
+                            if (finalPoints !== previousPoints) {
                                 currentRank = rankCount + 1;
                             }
                             if (currentRank === 1) {
@@ -67,10 +74,10 @@
                             } else {
                                 rankCell.textContent = currentRank;
                             }
-                            previousPoints = data.points;
+                            previousPoints = finalPoints;
                             rankCount++;
                             row.appendChild(rankCell);
-
+    
                             // Player Name
                             const playerNameCell = document.createElement('td');
                             const playerLink = document.createElement('a');
@@ -78,7 +85,7 @@
                             playerLink.href = `player.html?playerId=${data.id}`;
                             playerNameCell.appendChild(playerLink);
                             row.appendChild(playerNameCell);
-
+    
                             // Selected Countries
                             const selectedCountriesCell = document.createElement('td');
                             data.selectedCountries.forEach(countryName => {
@@ -91,12 +98,12 @@
                                 selectedCountriesCell.appendChild(img);
                             });
                             row.appendChild(selectedCountriesCell);
-
+    
                             // Points
                             const pointsCell = document.createElement('td');
-                            pointsCell.textContent = data.points;
+                            pointsCell.textContent = finalPoints;
                             row.appendChild(pointsCell);
-
+    
                             leaderboard.appendChild(row);
                         });
                     }).catch((error) => {
@@ -106,6 +113,7 @@
                 .catch(error => console.error('Error fetching countries data:', error));
         });
     </script>
+    
 </head>
 <body>
     <div class="title-container">
