@@ -67,6 +67,21 @@
         .back-button:hover {
             background-color: #0056b3;
         }
+        .penalty-section {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 800px;
+            text-align: left;
+        }
+        .penalty-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .penalty-value {
+            font-size: 1.1em;
+            color: #d9534f;
+        }
     </style>
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app-compat.js"></script>
@@ -160,6 +175,10 @@
 
                 tableBody.appendChild(row);
             });
+
+            // Display penalty
+            const penalty = playerData.penalty || 0;
+            document.getElementById('penalty-value').textContent = penalty;
         });
     </script>
 </head>
@@ -184,6 +203,10 @@
                 <!-- Player's selected countries data will be appended here -->
             </tbody>
         </table>
+        <div class="penalty-section">
+            <div class="penalty-title">Penalty for joining late:</div>
+            <div class="penalty-value" id="penalty-value"></div>
+        </div>
     </div>
 </body>
 </html>
