@@ -33,7 +33,7 @@ document.getElementById('update-button').addEventListener('click', async () => {
         console.log("Data fetched successfully.");
 
         // Extract the table content
-        const table = doc.querySelector('.wikitable.sortable.notheme.plainrowheaders.jquery-tablesorter');
+        const table = doc.querySelector('.wikitable.sortable.plainrowheaders.jquery-tablesorter');
         const rows = table.querySelectorAll('tbody tr');
         console.log(`Found ${rows.length} rows in the table.`);
 
